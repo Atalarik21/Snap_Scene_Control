@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Photobooth Control</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <style>
+    body{
+      font-family: Arial;
+      text-align: center;
+      background: #111;
+      color: white;
+    }
+
+    h1{color:#00d4ff;}
+
+    .status{
+      margin:10px;
+      padding:10px;
+      border-radius:10px;
+      background:#222;
+    }
+
+    .ok{color:#00e676;}
+    .bad{color:#ff1744;}
+
+    .card{
+      display:inline-block;
+      margin:15px;
+      padding:20px;
+      border-radius:15px;
+      background:#222;
+      width:120px;
+    }
+
+    button{
+      width:100px;
+      height:40px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    .on{background:#00c853;}
+    .off{background:#d50000;}
+  </style>
+</head>
+
+<body>
+
+<h1>📸 Photobooth Dashboard</h1>
+
+<div class="status">
+  Device: <span id="device" class="bad">OFFLINE</span> |
+  WiFi: <span id="wifi" class="bad">DISCONNECTED</span> |
+  MQTT: <span id="mqtt" class="bad">DISCONNECTED</span>
+</div>
+
+<div id="relays"></div>
+
+<script>
+
+// ================= MQTT =================
+const broker = "wss://67661be755b84a34a1f9b92d9dbff62c.s1.eu.hivemq.cloud:8884/mqtt";
+
+const options = {
+  username: "Snap_Scene",
+  password: "Atamation21",
+  reconnectPeriod: 2000
+};
+
+const client = mqtt.connect(broker, options);
+
+// ================= UI =================
+const container = document.getElementById("relays");
+
+for(let i=1;i<=4;i++){
+  container.innerHTML += `
+    <div class="card">
+      <h3>Relay ${i}</h3>
+      <button id="btn${i}" class="off" onclick="toggle(${i})">OFF</button>
+    </div>
+  `;
+}
+
+// ================= STATUS TIMEOUT =================
+let lastSeen = Date.now();
+
+setInterval(()=>{
+  if(Date.now() - lastSeen > 7000){
+    document.getElementById("device").innerText = "OFFLINE";
+    document.getElementById("device").className = "bad";
+  }
+},1000);
+
+// ================= MQTT EVENTS =================
+client.on("connect", () => {
+  console.log("MQTT Connected");
+  document.getElementById("mqtt").innerText = "CONNECTED";
+  document.getElementById("mqtt").className = "ok";
+
+  client.subscribe("photobooth/status");
+  client.subscribe("photobooth/heartbeat");
+});
+
+client.on("reconnect", ()=>{
+  document.getElementById("mqtt").innerText = "RECONNECTING...";
+});
+
+client.on("offline", ()=>{
+  document.getElementById("mqtt").innerText = "DISCONNECTED";
+  document.getElementById("mqtt").className = "bad";
+});
+
+client.on("message", (topic, message) => {
+
+  let data = JSON.parse(message.toString());
+
+  // ===== HEARTBEAT =====
+  if(topic === "photobooth/heartbeat"){
+    lastSeen = Date.now();
+
+    document.getElementById("device").innerText = "ONLINE";
+    document.getElementById("device").className = "ok";
+  }
+
+  // ===== STATUS =====
+  if(topic === "photobooth/status"){
+
+    // WIFI STATUS
+    if(data.wifi){
+      document.getElementById("wifi").innerText = "CONNECTED";
+      document.getElementById("wifi").className = "ok";
+    } else {
+      document.getElementById("wifi").innerText = "DISCONNECTED";
+      document.getElementById("wifi").className = "bad";
+    }
+
+    // MQTT STATUS
+    if(data.mqtt){
+      document.getElementById("mqtt").innerText = "CONNECTED";
+      document.getElementById("mqtt").className = "ok";
+    } else {
+      document.getElementById("mqtt").innerText = "DISCONNECTED";
+      document.getElementById("mqtt").className = "bad";
+    }
+
+    // RELAY
+    for(let i=1;i<=4;i++){
+      let btn = document.getElementById("btn"+i);
+
+      if(data["relay"+i]){
+        btn.innerText = "ON";
+        btn.className = "on";
+      } else {
+        btn.innerText = "OFF";
+        btn.className = "off";
+      }
+    }
+  }
+
+});
+
+// ================= CONTROL =================
+function toggle(relay){
+
+  let btn = document.getElementById("btn"+relay);
+  let state = btn.innerText === "OFF";
+
+  let payload = {
+    cmd: "setrelay",
+    relay: relay,
+    state: state
+  };
+
+  client.publish("photobooth/cmd", JSON.stringify(payload));
+}
+
+</script>
+
+</body>
+</html>
