@@ -390,7 +390,9 @@ themeToggleBtn.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
-applyTheme(localStorage.getItem('theme_pref') || 'dark');
+// Terapkan atribut tema segera (aman, tidak menyentuh chart yang belum ada)
+document.documentElement.setAttribute('data-theme', localStorage.getItem('theme_pref') || 'dark');
+themeToggleBtn.innerText = (localStorage.getItem('theme_pref') || 'dark') === 'light' ? '☀️' : '🌙';
 
 // ============ CONSTANTS ============
 const MAX_DAYS = 14;
@@ -743,6 +745,7 @@ loadData();
 cleanOldData();
 renderHistory();
 updateCharts();
+applyChartTheme(); // sinkronkan warna chart dengan tema yang sudah diterapkan di atas
 </script>
 </body>
 </html>
