@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Water System</title>
+<title>ATTAMATION - Water Alarm v2</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -311,7 +311,7 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
   </div>
 </div>
 
-<script src="https://unpkg.com/mqtt@5/dist/mqtt.min.js"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
 // ============ AUTH (client-side gate — ganti kredensial ini!) ============
 // CATATAN KEAMANAN: ini proteksi sisi tampilan saja (bukan keamanan server).
@@ -380,21 +380,7 @@ refreshAuthUI();
 
 // ============ THEME (Dark/Light) ============
 const themeToggleBtn = document.getElementById('themeToggle');
-
-function applyTheme(theme){
-
-    document.documentElement.setAttribute('data-theme', theme);
-
-    themeToggleBtn.innerText =
-        theme === "light" ? "☀️" : "🌙";
-
-    localStorage.setItem("theme_pref", theme);
-
-    if (typeof distChart !== "undefined") {
-        applyChartTheme();
-    }
-
-}
+function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   themeToggleBtn.innerText = theme === 'light' ? '☀️' : '🌙';
   localStorage.setItem('theme_pref', theme);
@@ -404,7 +390,7 @@ themeToggleBtn.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
-//applyTheme(localStorage.getItem('theme_pref') || 'dark');
+applyTheme(localStorage.getItem('theme_pref') || 'dark');
 
 // ============ CONSTANTS ============
 const MAX_DAYS = 14;
@@ -638,25 +624,7 @@ const mqttUser = "Water_Sistem_Sensor";
 const mqttPass = "45499999";
 const clientId = "web_wateralarm_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, {
-
-    clientId,
-
-    username: mqttUser,
-
-    password: mqttPass,
-
-    protocol: "wss",
-
-    clean: true,
-
-    reconnectPeriod:3000,
-
-    connectTimeout:30000,
-
-    keepalive:60
-
-});
+const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, { clientId, username: mqttUser, password: mqttPass, reconnectPeriod: 3000 });
 
 function updateConnectionStatus(connected) {
   document.getElementById('statusDot').classList.toggle('online', connected);
@@ -667,35 +635,13 @@ function updateManualControls() {
 }
 
 client.on("connect", () => {
-    console.log("MQTT Connected");
-    updateConnectionStatus(true);
-
-    client.subscribe("water_alarm/data");
-    client.subscribe("water_alarm/event");
-
-    setTimeout(() => {
-        client.publish("water_alarm/get_data", "1");
-    }, 500);
+  updateConnectionStatus(true);
+  client.subscribe("water_alarm/data");
+  client.subscribe("water_alarm/event");
+  setTimeout(() => client.publish("water_alarm/get_data", "1"), 500);
 });
-
-client.on("reconnect", () => {
-    console.log("MQTT Reconnecting...");
-});
-
-client.on("offline", () => {
-    console.log("MQTT Offline");
-    updateConnectionStatus(false);
-});
-
-client.on("close", () => {
-    console.log("MQTT Closed");
-    updateConnectionStatus(false);
-});
-
-client.on("error", (err) => {
-    console.log(err);
-    updateConnectionStatus(false);
-});
+client.on("disconnect", () => updateConnectionStatus(false));
+client.on("error", () => updateConnectionStatus(false));
 
 client.on("message", (topic, message) => {
   const msg = message.toString();
@@ -797,8 +743,6 @@ loadData();
 cleanOldData();
 renderHistory();
 updateCharts();
-
-applyTheme(localStorage.getItem('theme_pref') || 'dark');
 </script>
 </body>
 </html>
