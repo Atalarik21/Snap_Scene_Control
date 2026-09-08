@@ -619,12 +619,17 @@ document.getElementById('clearTrends').addEventListener('click', () => {
 });
 
 // ============ MQTT ============
+// Broker sama dengan Soil_System. Topic diberi prefix "water_alarm/" agar
+// tidak bentrok. Jika broker Anda memakai ACL per-user, buat user MQTT
+// baru khusus device ini.
 const mqttHost = "a83ccc7ca89145d195e89865c270d0f2.s1.eu.hivemq.cloud";
 const mqttUser = "Water_Sistem_Sensor";
 const mqttPass = "45499999";
 const clientId = "web_wateralarm_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, { clientId, username: mqttUser, password: mqttPass, reconnectPeriod: 3000 });
+const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, {
+  clientId, username: mqttUser, password: mqttPass, reconnectPeriod: 3000
+});
 
 function updateConnectionStatus(connected) {
   document.getElementById('statusDot').classList.toggle('online', connected);
