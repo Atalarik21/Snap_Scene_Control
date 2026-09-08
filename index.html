@@ -627,7 +627,7 @@ const mqttUser = "Water_Sistem_Sensor";
 const mqttPass = "45499999";
 const clientId = "web_wateralarm_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, {
+const client = mqtt.connect(`wss://${mqttHost}:8883/mqtt`, {
   clientId, username: mqttUser, password: mqttPass, reconnectPeriod: 3000
 });
 
