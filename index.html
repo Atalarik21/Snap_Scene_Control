@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Water Alarm v2</title>
+<title>Flood Water System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -380,7 +380,23 @@ refreshAuthUI();
 
 // ============ THEME (Dark/Light) ============
 const themeToggleBtn = document.getElementById('themeToggle');
-function applyTheme(theme) {
+function applyTheme(theme){
+
+    document.documentElement.setAttribute('data-theme', theme);
+
+    themeToggleBtn.innerText = theme === 'light'
+        ? '☀️'
+        : '🌙';
+
+    localStorage.setItem('theme_pref', theme);
+
+    if(typeof distChart !== "undefined"){
+
+        applyChartTheme();
+
+    }
+
+}
   document.documentElement.setAttribute('data-theme', theme);
   themeToggleBtn.innerText = theme === 'light' ? '☀️' : '🌙';
   localStorage.setItem('theme_pref', theme);
@@ -390,7 +406,7 @@ themeToggleBtn.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
-applyTheme(localStorage.getItem('theme_pref') || 'dark');
+//applyTheme(localStorage.getItem('theme_pref') || 'dark');
 
 // ============ CONSTANTS ============
 const MAX_DAYS = 14;
@@ -783,6 +799,8 @@ loadData();
 cleanOldData();
 renderHistory();
 updateCharts();
+
+applyTheme(localStorage.getItem('theme_pref') || 'dark');
 </script>
 </body>
 </html>
