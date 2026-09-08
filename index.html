@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ATTAMATION - Water Alarm v2</title>
+<title>Flood Alarm System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -58,14 +58,6 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 .threshold-info{font-size:12px;color:var(--muted);margin-top:10px;padding:6px 12px;background:var(--surface);border-radius:6px;text-align:center}
 .bypass-note{margin-top:10px;font-size:12px;color:var(--warning);background:rgba(255,179,0,0.1);padding:6px 14px;border-radius:6px;display:none}
 .bypass-note.show{display:block}
-/* LED indicators */
-.led-row{display:flex;gap:22px;margin-top:20px;justify-content:center}
-.led-item{display:flex;flex-direction:column;align-items:center;gap:6px}
-.led-dot{width:26px;height:26px;border-radius:50%;background:#333;border:2px solid #222;transition:all 0.15s}
-.led-dot.green-on{background:radial-gradient(circle at 35% 30%,#7dffc4,#00ff88);box-shadow:0 0 14px 3px rgba(0,255,136,0.7)}
-.led-dot.white-on{background:radial-gradient(circle at 35% 30%,#ffffff,#dbe4ff);box-shadow:0 0 14px 3px rgba(255,255,255,0.8)}
-.led-dot.red-on{background:radial-gradient(circle at 35% 30%,#ff9d9d,#ff2d2d);box-shadow:0 0 14px 3px rgba(255,45,45,0.8)}
-.led-label{font-size:10.5px;color:var(--muted);font-weight:600}
 .control-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px}
 .control-title{font-weight:700;color:var(--muted)}
 .mode-toggle{display:flex;gap:8px;align-items:center}
@@ -132,13 +124,13 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 .chart-wrapper{height:260px;position:relative}
 .storage-info{font-size:11px;color:var(--muted);text-align:center;padding:10px;background:var(--surface);border-radius:8px;margin-top:12px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.big-value{font-size:60px}header h1{font-size:22px}}
-@media(max-width:600px){.wrap{padding:12px}.big-value{font-size:46px}.big-stat{min-height:auto;padding:16px}.card{padding:14px}.controls{flex-direction:column;align-items:stretch}.control-input{width:100%}.btn{width:100%}.manual-controls{margin-left:0;width:100%;flex-direction:column}.date-nav{flex-direction:column}.date-nav-btn{width:100%}.led-row{gap:14px}}
+@media(max-width:600px){.wrap{padding:12px}.big-value{font-size:46px}.big-stat{min-height:auto;padding:16px}.card{padding:14px}.controls{flex-direction:column;align-items:stretch}.control-input{width:100%}.btn{width:100%}.manual-controls{margin-left:0;width:100%;flex-direction:column}.date-nav{flex-direction:column}.date-nav-btn{width:100%}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>ATTAMATION</h1>
+  <h1>Flood Alarm System</h1>
   <div class="right">
     <div>
       <div id="clock">--:--:--</div>
@@ -170,12 +162,6 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
     <div class="zone-badge" id="zoneBadge">--</div>
     <div class="threshold-info" id="thresholdInfo">Aman ≥ -- cm &nbsp;|&nbsp; Bahaya ≤ -- cm</div>
     <div class="bypass-note" id="bypassNote">🔕 Alarm sedang di-bypass manual (tombol fisik) — LED merah tetap berkedip sebagai peringatan</div>
-
-    <div class="led-row">
-      <div class="led-item"><div class="led-dot" id="ledGreen"></div><div class="led-label">HIJAU · AMAN</div></div>
-      <div class="led-item"><div class="led-dot" id="ledWhite"></div><div class="led-label">PUTIH · WARNING</div></div>
-      <div class="led-item"><div class="led-dot" id="ledRed"></div><div class="led-label">MERAH · BAHAYA</div></div>
-    </div>
   </div>
 
   <div class="card">
@@ -319,7 +305,7 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 // Cocok untuk mencegah anggota keluarga/orang iseng mengubah setting,
 // TAPI JANGAN andalkan ini untuk sistem yang diakses publik luas.
 const AUTH_USER = "admin";
-const AUTH_PASS = "attamation123";
+const AUTH_PASS = "12345678";
 
 let isLoggedIn = sessionStorage.getItem('wa_logged_in') === '1';
 
@@ -670,10 +656,6 @@ client.on("message", (topic, message) => {
 
       document.getElementById('thresholdInfo').innerText = `Aman ≥ ${d.jarakAman} cm  |  Bahaya ≤ ${d.jarakBahaya} cm`;
       document.getElementById('bypassNote').classList.toggle('show', d.bypass === 1);
-
-      document.getElementById('ledGreen').className = 'led-dot' + (d.ledGreen ? ' green-on' : '');
-      document.getElementById('ledWhite').className = 'led-dot' + (d.ledWhite ? ' white-on' : '');
-      document.getElementById('ledRed').className = 'led-dot' + (d.ledRed ? ' red-on' : '');
 
       const isAlarm = d.relay === 1;
       const pumpEl = document.getElementById('pumpState');
