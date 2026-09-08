@@ -380,20 +380,18 @@ refreshAuthUI();
 
 // ============ THEME (Dark/Light) ============
 const themeToggleBtn = document.getElementById('themeToggle');
+
 function applyTheme(theme){
 
     document.documentElement.setAttribute('data-theme', theme);
 
-    themeToggleBtn.innerText = theme === 'light'
-        ? '☀️'
-        : '🌙';
+    themeToggleBtn.innerText =
+        theme === "light" ? "☀️" : "🌙";
 
-    localStorage.setItem('theme_pref', theme);
+    localStorage.setItem("theme_pref", theme);
 
-    if(typeof distChart !== "undefined"){
-
+    if (typeof distChart !== "undefined") {
         applyChartTheme();
-
     }
 
 }
