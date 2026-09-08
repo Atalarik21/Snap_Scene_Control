@@ -1,77 +1,47 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title> Water Alarm v2</title>
+<title>ATTAMATION - Water Alarm</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <style>
-:root{
-  --accent:#00f1ff;--accent2:#9b4dff;--muted:#9aa3b2;--success:#00ff88;--warning:#ffb300;--danger:#ff6b6b;
-  --bg1:#060613;--bg2:#0b0f1a;--page-tint:rgba(155,77,255,0.06);--text:#e6eef8;
-  --glow:0 8px 30px rgba(155,77,255,0.12);
-  --surface:rgba(255,255,255,0.02);--surface-soft:rgba(255,255,255,0.007);
-  --surface2:rgba(255,255,255,0.05);--surface3:rgba(255,255,255,0.1);
-  --border:rgba(255,255,255,0.03);--border2:rgba(255,255,255,0.1);
-  --input-bg:rgba(0,0,0,0.3);--device-bg:#0b0f1a;--btn-text:#021;
-}
-html[data-theme="light"]{
-  --accent:#0090a8;--accent2:#7c3aed;--muted:#5b6472;--success:#059669;--warning:#b45309;--danger:#dc2626;
-  --bg1:#eef1f8;--bg2:#ffffff;--page-tint:rgba(124,58,237,0.05);--text:#101827;
-  --glow:0 8px 24px rgba(15,23,42,0.08);
-  --surface:rgba(15,23,42,0.035);--surface-soft:rgba(15,23,42,0.015);
-  --surface2:rgba(15,23,42,0.05);--surface3:rgba(15,23,42,0.09);
-  --border:rgba(15,23,42,0.08);--border2:rgba(15,23,42,0.14);
-  --input-bg:rgba(15,23,42,0.045);--device-bg:#eef1f6;--btn-text:#fff;
-}
+:root{--bg:#070617;--card:#0f1220;--accent:#00f1ff;--accent2:#9b4dff;--muted:#9aa3b2;--success:#00ff88;--warning:#ffaa00;--danger:#ff6b6b;--glow:0 8px 30px rgba(155,77,255,0.12)}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;font-family:'Inter',Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 10%,var(--page-tint),transparent),linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);color:var(--text);overflow-x:hidden;transition:background 0.3s,color 0.3s}
+html,body{height:100%;margin:0;padding:0;font-family:'Inter',Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 10%,rgba(155,77,255,0.06),transparent),linear-gradient(180deg,#060613 0%,#0b0f1a 100%);color:#e6eef8;overflow-x:hidden}
 .wrap{max-width:1200px;margin:0 auto;padding:18px}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px}
 header h1{font-family:'Orbitron',sans-serif;letter-spacing:2px;color:var(--accent2);margin:0;font-size:28px}
-header .right{display:flex;align-items:center;gap:14px;text-align:right;color:var(--muted);font-size:14px}
-.theme-toggle,.login-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:10px;cursor:pointer;transition:all 0.2s}
-.theme-toggle{width:38px;height:38px;font-size:17px;display:flex;align-items:center;justify-content:center}
-.theme-toggle:hover,.login-btn:hover{background:var(--surface3)}
-.login-btn{padding:8px 14px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px}
-.login-btn.logged-in{color:var(--success);border-color:var(--success)}
+header .right{text-align:right;color:var(--muted);font-size:14px}
 .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.tab{padding:10px 20px;border-radius:10px;cursor:pointer;background:var(--surface);color:var(--muted);border:1px solid var(--border);font-weight:600;transition:all 0.3s}
+.tab{padding:10px 20px;border-radius:10px;cursor:pointer;background:rgba(255,255,255,0.02);color:var(--muted);border:1px solid rgba(255,255,255,0.03);font-weight:600;transition:all 0.3s}
 .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#021}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.connection-status{background:var(--surface);padding:8px 14px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:13px}
+.connection-status{background:rgba(255,255,255,0.02);padding:8px 14px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:13px}
 .status-dot{width:10px;height:10px;border-radius:50%;background:var(--danger)}
 .status-dot.online{background:var(--success)}
 .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-.card{background:linear-gradient(180deg,var(--surface),var(--surface-soft));border-radius:14px;padding:20px;box-shadow:var(--glow);border:1px solid var(--border)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.007));border-radius:14px;padding:20px;box-shadow:var(--glow);border:1px solid rgba(255,255,255,0.03)}
 .big-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px}
-.big-stat-title{font-size:16px;color:var(--muted);margin-bottom:16px}
-.big-value{font-family:'Orbitron',sans-serif;color:var(--success);font-size:78px;line-height:1;transition:color 0.3s}
-.big-value.warning{color:var(--warning)}
-.big-value.danger{color:var(--danger)}
+.big-stat-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.big-stat-title{font-size:16px;color:var(--muted)}
+.big-value{font-family:'Orbitron',sans-serif;color:var(--accent);font-size:84px;text-shadow:0 6px 30px rgba(0,241,255,0.08);line-height:1}
+.big-value.alarm{color:var(--danger);text-shadow:0 6px 30px rgba(255,107,107,0.25)}
 .subtitle{color:var(--muted);margin-top:8px}
-.zone-badge{margin-top:10px;font-size:15px;font-weight:800;letter-spacing:1px;padding:6px 18px;border-radius:20px;background:rgba(0,255,136,0.12);color:var(--success)}
-.zone-badge.warning{background:rgba(255,179,0,0.14);color:var(--warning)}
-.zone-badge.danger{background:rgba(255,107,107,0.14);color:var(--danger)}
-.threshold-info{font-size:12px;color:var(--muted);margin-top:10px;padding:6px 12px;background:var(--surface);border-radius:6px;text-align:center}
-.bypass-note{margin-top:10px;font-size:12px;color:var(--warning);background:rgba(255,179,0,0.1);padding:6px 14px;border-radius:6px;display:none}
-.bypass-note.show{display:block}
-/* LED indicators */
-.led-row{display:flex;gap:22px;margin-top:20px;justify-content:center}
-.led-item{display:flex;flex-direction:column;align-items:center;gap:6px}
-.led-dot{width:26px;height:26px;border-radius:50%;background:#333;border:2px solid #222;transition:all 0.15s}
-.led-dot.green-on{background:radial-gradient(circle at 35% 30%,#7dffc4,#00ff88);box-shadow:0 0 14px 3px rgba(0,255,136,0.7)}
-.led-dot.white-on{background:radial-gradient(circle at 35% 30%,#ffffff,#dbe4ff);box-shadow:0 0 14px 3px rgba(255,255,255,0.8)}
-.led-dot.red-on{background:radial-gradient(circle at 35% 30%,#ff9d9d,#ff2d2d);box-shadow:0 0 14px 3px rgba(255,45,45,0.8)}
-.led-label{font-size:10.5px;color:var(--muted);font-weight:600}
+.threshold-info{font-size:12px;color:var(--warning);margin-top:8px;padding:6px 12px;background:rgba(255,170,0,0.1);border-radius:6px}
+.small-row{display:flex;gap:12px;margin-top:18px;justify-content:center;flex-wrap:wrap}
+.stat-mini{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:100px;text-align:center}
+.stat-mini h4{margin:0;font-size:14px;color:var(--muted)}
+.stat-mini p{margin:6px 0 0 0;font-weight:700;font-size:15px}
 .control-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px}
 .control-title{font-weight:700;color:var(--muted)}
 .mode-toggle{display:flex;gap:8px;align-items:center}
 .mode-label{font-size:12px;color:var(--muted)}
-.mode-select,.date-input{background:var(--input-bg);color:var(--accent);border-radius:8px;padding:6px 10px;border:1px solid var(--border2);font-size:13px}
-.device-card{background:var(--device-bg);padding:16px;border-radius:12px;border:1px solid var(--border);margin-bottom:12px}
+.mode-select,.date-input{background:rgba(0,0,0,0.3);color:var(--accent);border-radius:8px;padding:6px 10px;border:1px solid rgba(255,255,255,0.1);font-size:13px}
+.device-card{background:linear-gradient(180deg,#0b0f1a,#0b0f1a);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
 .device-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .device-name{font-weight:600}
 .device-desc{font-size:12px;color:var(--muted)}
@@ -80,41 +50,29 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 .controls{margin-top:12px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
 .control-group{display:flex;flex-direction:column;gap:4px}
 .control-label{font-size:11px;color:var(--muted)}
-.control-input{padding:8px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--accent);width:80px;font-size:14px;text-align:center}
-.btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--btn-text);padding:8px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap}
-.btn.secondary{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+.control-input{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent);width:70px;font-size:14px;text-align:center}
+.btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#021;padding:8px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1)}
 .btn.sm{padding:6px 10px;font-size:11px}
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 .manual-controls{display:none;margin-left:auto;gap:8px}
 .manual-controls.show{display:flex}
 .info-text{font-size:11px;color:var(--muted);text-align:center;padding-top:8px;line-height:1.6}
-/* Lock panel */
-.lock-panel{text-align:center;padding:28px 10px;color:var(--muted)}
-.lock-icon{font-size:34px;margin-bottom:10px}
-.lock-text{font-size:13px;margin-bottom:16px}
-/* Login modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;z-index:100}
-.modal-overlay.show{display:flex}
-.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:26px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
-.modal-box h3{margin:0 0 4px 0;font-size:17px;color:var(--text)}
-.modal-box p{margin:0 0 16px 0;font-size:12px;color:var(--muted)}
-.modal-input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border2);background:var(--input-bg);color:var(--text);margin-bottom:10px;font-size:14px}
-.modal-error{color:var(--danger);font-size:12px;min-height:16px;margin-bottom:6px}
-.modal-actions{display:flex;gap:8px;margin-top:6px}
-.modal-actions .btn{flex:1}
 /* Date Navigation */
-.date-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;padding:12px;background:var(--surface);border-radius:10px}
-.date-nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:18px}
-.date-nav-btn:hover{background:var(--surface3)}
+.date-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px}
+.date-nav-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:18px}
+.date-nav-btn:hover{background:rgba(255,255,255,0.1)}
+.date-display{flex:1;text-align:center;font-weight:600;color:var(--accent);font-size:14px}
+.time-slider{width:100%;margin:10px 0}
+.time-range{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 /* History */
 .history-container{max-height:500px;overflow-y:auto}
-.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--surface);border-radius:8px;margin-bottom:8px;gap:10px}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;margin-bottom:8px;gap:10px}
 .history-icon{font-size:20px;min-width:30px}
 .history-main{flex:1}
 .history-event{font-weight:600;font-size:14px}
-.history-event.danger{color:var(--danger)}
-.history-event.safe{color:var(--success)}
-.history-event.warning{color:var(--warning)}
+.history-event.on{color:var(--danger)}
+.history-event.off{color:var(--success)}
 .history-event.auto{color:var(--accent)}
 .history-event.manual{color:var(--accent2)}
 .history-details{font-size:11px;color:var(--muted);margin-top:2px}
@@ -127,12 +85,14 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 .history-count{font-size:12px;color:var(--muted);margin-bottom:10px}
 .no-data{text-align:center;color:var(--muted);padding:40px}
 /* Charts */
-.chart-container{background:var(--surface);border-radius:12px;padding:16px;margin-bottom:16px}
+.chart-container{background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;margin-bottom:16px}
 .chart-title{font-size:14px;color:var(--muted);margin-bottom:12px;font-weight:600}
 .chart-wrapper{height:260px;position:relative}
-.storage-info{font-size:11px;color:var(--muted);text-align:center;padding:10px;background:var(--surface);border-radius:8px;margin-top:12px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}.big-value{font-size:60px}header h1{font-size:22px}}
-@media(max-width:600px){.wrap{padding:12px}.big-value{font-size:46px}.big-stat{min-height:auto;padding:16px}.card{padding:14px}.controls{flex-direction:column;align-items:stretch}.control-input{width:100%}.btn{width:100%}.manual-controls{margin-left:0;width:100%;flex-direction:column}.date-nav{flex-direction:column}.date-nav-btn{width:100%}.led-row{gap:14px}}
+/* Storage info */
+.storage-info{font-size:11px;color:var(--muted);text-align:center;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:12px}
+/* Responsive */
+@media(max-width:900px){.grid{grid-template-columns:1fr}.big-value{font-size:64px}header h1{font-size:22px}}
+@media(max-width:600px){.wrap{padding:12px}.big-value{font-size:48px}.big-stat{min-height:auto;padding:16px}.card{padding:14px}.small-row{flex-direction:column;width:100%}.stat-mini{width:100%}.controls{flex-direction:column;align-items:stretch}.control-input{width:100%}.btn{width:100%}.manual-controls{margin-left:0;width:100%;flex-direction:column}.date-nav{flex-direction:column}.date-nav-btn{width:100%}}
 </style>
 </head>
 <body>
@@ -140,12 +100,8 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 <header>
   <h1>ATTAMATION</h1>
   <div class="right">
-    <div>
-      <div id="clock">--:--:--</div>
-      <div id="date">--</div>
-    </div>
-    <button class="login-btn" id="loginBtn">🔒 Login</button>
-    <button class="theme-toggle" id="themeToggle" title="Ganti mode gelap/terang">🌙</button>
+    <div id="clock">--:--:--</div>
+    <div id="date">--</div>
   </div>
 </header>
 
@@ -164,17 +120,16 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 <div class="tab-content active" id="tab-dashboard">
 <div class="grid">
   <div class="card big-stat">
-    <div class="big-stat-title">JARAK SENSOR - AIR</div>
+    <div class="big-stat-header">
+      <div class="big-stat-title">JARAK SENSOR - AIR</div>
+    </div>
     <div class="big-value" id="distanceVal">--</div>
     <div class="subtitle">Jarak Sensor ke Permukaan Air (cm)</div>
-    <div class="zone-badge" id="zoneBadge">--</div>
-    <div class="threshold-info" id="thresholdInfo">Aman ≥ -- cm &nbsp;|&nbsp; Bahaya ≤ -- cm</div>
-    <div class="bypass-note" id="bypassNote">🔕 Alarm sedang di-bypass manual (tombol fisik) — LED merah tetap berkedip sebagai peringatan</div>
-
-    <div class="led-row">
-      <div class="led-item"><div class="led-dot" id="ledGreen"></div><div class="led-label">HIJAU · AMAN</div></div>
-      <div class="led-item"><div class="led-dot" id="ledWhite"></div><div class="led-label">PUTIH · WARNING</div></div>
-      <div class="led-item"><div class="led-dot" id="ledRed"></div><div class="led-label">MERAH · BAHAYA</div></div>
+    <div class="threshold-info" id="thresholdInfo">Sirine ON &lt; 30 cm | OFF ≥ 35 cm</div>
+    <div class="small-row">
+      <div class="stat-mini"><h4>Batas Bawah</h4><p id="limitVal">-- cm</p></div>
+      <div class="stat-mini"><h4>Selisih</h4><p id="marginVal">--</p></div>
+      <div class="stat-mini"><h4>Status</h4><p id="safetyStatus">--</p></div>
     </div>
   </div>
 
@@ -183,7 +138,7 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
       <div class="control-title">DEVICE CONTROL</div>
       <div class="mode-toggle">
         <span class="mode-label">Mode</span>
-        <select id="modeSelect" class="mode-select" disabled>
+        <select id="modeSelect" class="mode-select">
           <option value="AUTO">AUTO</option>
           <option value="MANUAL">MANUAL</option>
         </select>
@@ -194,32 +149,22 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
       <div class="device-row">
         <div>
           <div class="device-name">🚨 Sirine Alarm</div>
-          <div class="device-desc">Relay Optocoupler</div>
+          <div class="device-desc">Alarm Ketinggian / Luapan Air</div>
         </div>
         <div style="text-align:right">
           <div class="pump-state" id="pumpState">OFF</div>
           <div style="font-size:11px;color:var(--muted)">Status</div>
         </div>
       </div>
-    </div>
 
-    <!-- LOCKED VIEW (tanpa login) -->
-    <div class="lock-panel" id="lockPanel">
-      <div class="lock-icon">🔒</div>
-      <div class="lock-text">Login diperlukan untuk mengubah pengaturan<br>(Jarak Aman / Jarak Bahaya / Mode)</div>
-      <button class="btn" id="lockPanelLoginBtn">Login Sekarang</button>
-    </div>
-
-    <!-- UNLOCKED VIEW (setelah login) -->
-    <div id="settingsPanel" style="display:none">
       <div class="controls">
         <div class="control-group">
-          <div class="control-label">Jarak Aman (cm)</div>
-          <input id="setAman" type="number" min="1" max="500" value="100" class="control-input"/>
+          <div class="control-label">Batas Bawah (cm)</div>
+          <input id="setpoint" type="number" min="1" max="500" value="30" class="control-input"/>
         </div>
         <div class="control-group">
-          <div class="control-label">Jarak Bahaya (cm)</div>
-          <input id="setBahaya" type="number" min="1" max="500" value="30" class="control-input"/>
+          <div class="control-label">Hysteresis (cm)</div>
+          <input id="hysteresis" type="number" min="1" max="50" value="5" class="control-input"/>
         </div>
         <button class="btn" id="setBtn">SET</button>
         <div id="manualControls" class="manual-controls">
@@ -227,13 +172,11 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
           <button class="btn secondary" id="pumpOff">OFF</button>
         </div>
       </div>
-      <div id="setError" style="color:var(--danger);font-size:11px;margin-top:6px"></div>
     </div>
 
     <div class="info-text">
-      <div>Jarak Aman = jarak MINIMAL supaya dianggap aman (jauh dari sensor)</div>
-      <div>Jarak Bahaya = jarak MAKSIMAL sebelum dianggap bahaya (dekat dari sensor)</div>
-      <div>Antara keduanya = zona WARNING (LED putih berkedip)</div>
+      <div><b>Hysteresis</b> mencegah sirine berkedip di sekitar batas</div>
+      <div>Sirine ON saat jarak &lt; batas bawah, OFF saat jarak ≥ (batas bawah + hysteresis)</div>
     </div>
   </div>
 </div>
@@ -256,10 +199,10 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 
   <select id="historyFilter" class="mode-select" style="width:100%;margin-bottom:12px">
     <option value="all">All Events</option>
-    <option value="zone">Perubahan Zona</option>
     <option value="sirine">Sirine Only</option>
-    <option value="bypass">Bypass Only</option>
     <option value="mode">Mode Only</option>
+    <option value="auto">Auto Trigger</option>
+    <option value="manual">Manual Trigger</option>
   </select>
 
   <div class="history-count" id="historyCount">0 events</div>
@@ -296,158 +239,108 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
 </div>
 </div>
 
-<!-- LOGIN MODAL -->
-<div class="modal-overlay" id="loginModal">
-  <div class="modal-box">
-    <h3>🔒 Login Diperlukan</h3>
-    <p>Masuk untuk mengubah pengaturan sistem (jarak aman/bahaya, mode).</p>
-    <input type="text" id="loginUser" class="modal-input" placeholder="Username" autocomplete="off">
-    <input type="password" id="loginPass" class="modal-input" placeholder="Password">
-    <div class="modal-error" id="loginError"></div>
-    <div class="modal-actions">
-      <button class="btn secondary" id="loginCancel">Batal</button>
-      <button class="btn" id="loginSubmit">Login</button>
-    </div>
-  </div>
-</div>
-
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
-// ============ AUTH (client-side gate — ganti kredensial ini!) ============
-// CATATAN KEAMANAN: ini proteksi sisi tampilan saja (bukan keamanan server).
-// Siapapun yang membuka "View Page Source" bisa melihat kredensial ini.
-// Cocok untuk mencegah anggota keluarga/orang iseng mengubah setting,
-// TAPI JANGAN andalkan ini untuk sistem yang diakses publik luas.
-const AUTH_USER = "admin";
-const AUTH_PASS = "attamation123";
-
-let isLoggedIn = sessionStorage.getItem('wa_logged_in') === '1';
-
-const loginModal = document.getElementById('loginModal');
-const loginBtn = document.getElementById('loginBtn');
-const lockPanel = document.getElementById('lockPanel');
-const settingsPanel = document.getElementById('settingsPanel');
-const modeSelectEl = document.getElementById('modeSelect');
-
-function refreshAuthUI() {
-  if (isLoggedIn) {
-    loginBtn.textContent = '🔓 Logout';
-    loginBtn.classList.add('logged-in');
-    lockPanel.style.display = 'none';
-    settingsPanel.style.display = 'block';
-    modeSelectEl.disabled = false;
-  } else {
-    loginBtn.textContent = '🔒 Login';
-    loginBtn.classList.remove('logged-in');
-    lockPanel.style.display = 'block';
-    settingsPanel.style.display = 'none';
-    modeSelectEl.disabled = true;
-  }
-}
-
-function openLoginModal() {
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-  document.getElementById('loginError').textContent = '';
-  loginModal.classList.add('show');
-}
-function closeLoginModal() { loginModal.classList.remove('show'); }
-
-loginBtn.addEventListener('click', () => {
-  if (isLoggedIn) {
-    isLoggedIn = false;
-    sessionStorage.removeItem('wa_logged_in');
-    refreshAuthUI();
-  } else {
-    openLoginModal();
-  }
-});
-document.getElementById('lockPanelLoginBtn').addEventListener('click', openLoginModal);
-document.getElementById('loginCancel').addEventListener('click', closeLoginModal);
-document.getElementById('loginSubmit').addEventListener('click', () => {
-  const u = document.getElementById('loginUser').value;
-  const p = document.getElementById('loginPass').value;
-  if (u === AUTH_USER && p === AUTH_PASS) {
-    isLoggedIn = true;
-    sessionStorage.setItem('wa_logged_in', '1');
-    closeLoginModal();
-    refreshAuthUI();
-  } else {
-    document.getElementById('loginError').textContent = 'Username atau password salah.';
-  }
-});
-refreshAuthUI();
-
-// ============ THEME (Dark/Light) ============
-const themeToggleBtn = document.getElementById('themeToggle');
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  themeToggleBtn.innerText = theme === 'light' ? '☀️' : '🌙';
-  localStorage.setItem('theme_pref', theme);
-  if (typeof applyChartTheme === 'function') applyChartTheme();
-}
-themeToggleBtn.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-});
-applyTheme(localStorage.getItem('theme_pref') || 'dark');
-
 // ============ CONSTANTS ============
-const MAX_DAYS = 14;
-const TREND_INTERVAL = 1000;
-const DATA_VERSION = 2;
+const MAX_DAYS = 14; // 2 minggu retensi
+const TREND_INTERVAL = 1000; // Simpan trend tiap 1 detik
+const DATA_VERSION = 1;
 
-let userEditingAman = false;
-let userEditingBahaya = false;
+// ============ STATE ============
+let userEditingSetpoint = false;
+let userEditingHysteresis = false;
 let currentMode = "AUTO";
 let lastTrendSave = 0;
-let eventHistory = {};
-let trendData = {};
+
+// Data storage dengan date keys
+let eventHistory = {}; // { "2024-01-15": [{...}, {...}], ... }
+let trendData = {};    // { "2024-01-15": { dist:[], time:[] }, ... }
+
+// Current view dates
 let historyViewDate = new Date();
 let trendViewDate = new Date();
 
-// ============ UTILITY ============
-function formatDate(d) { return d.toISOString().split('T')[0]; }
-function formatTime(d) { return d.toTimeString().split(' ')[0]; }
+// ============ UTILITY FUNCTIONS ============
+function formatDate(d) {
+  return d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+}
+
+function formatTime(d) {
+  return d.toTimeString().split(' ')[0]; // "HH:MM:SS"
+}
+
 function pad(n) { return n < 10 ? '0' + n : n; }
-function getDateKey(date = new Date()) { return formatDate(date); }
-function parseDate(dateStr) { return new Date(dateStr + 'T00:00:00'); }
+
+function getDateKey(date = new Date()) {
+  return formatDate(date);
+}
+
+function parseDate(dateStr) {
+  return new Date(dateStr + 'T00:00:00');
+}
 
 // ============ DATA MANAGEMENT ============
 function loadData() {
   try {
     const savedEvents = localStorage.getItem('eventHistory_v' + DATA_VERSION);
     const savedTrends = localStorage.getItem('trendData_v' + DATA_VERSION);
+
     if (savedEvents) eventHistory = JSON.parse(savedEvents);
     if (savedTrends) trendData = JSON.parse(savedTrends);
+
     cleanOldData();
-  } catch(e) { eventHistory = {}; trendData = {}; }
+  } catch(e) {
+    console.error("Load data error:", e);
+    eventHistory = {};
+    trendData = {};
+  }
 }
+
 function saveData() {
   try {
     localStorage.setItem('eventHistory_v' + DATA_VERSION, JSON.stringify(eventHistory));
     localStorage.setItem('trendData_v' + DATA_VERSION, JSON.stringify(trendData));
-  } catch(e) { removeOldestDay(); saveData(); }
+  } catch(e) {
+    console.error("Save data error:", e);
+    removeOldestDay();
+    saveData();
+  }
 }
+
 function cleanOldData() {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - MAX_DAYS);
   const cutoffKey = formatDate(cutoffDate);
-  Object.keys(eventHistory).forEach(key => { if (key < cutoffKey) delete eventHistory[key]; });
-  Object.keys(trendData).forEach(key => { if (key < cutoffKey) delete trendData[key]; });
+
+  Object.keys(eventHistory).forEach(key => {
+    if (key < cutoffKey) delete eventHistory[key];
+  });
+
+  Object.keys(trendData).forEach(key => {
+    if (key < cutoffKey) delete trendData[key];
+  });
+
   saveData();
 }
+
 function removeOldestDay() {
   const eventKeys = Object.keys(eventHistory).sort();
   const trendKeys = Object.keys(trendData).sort();
+
   if (eventKeys.length > 0) delete eventHistory[eventKeys[0]];
   if (trendKeys.length > 0) delete trendData[trendKeys[0]];
 }
+
 function getStorageStats() {
   const eventDays = Object.keys(eventHistory).length;
   const trendDays = Object.keys(trendData).length;
-  let totalEvents = 0; Object.values(eventHistory).forEach(arr => totalEvents += arr.length);
-  let totalTrends = 0; Object.values(trendData).forEach(d => totalTrends += (d.time?.length || 0));
+
+  let totalEvents = 0;
+  Object.values(eventHistory).forEach(arr => totalEvents += arr.length);
+
+  let totalTrends = 0;
+  Object.values(trendData).forEach(d => totalTrends += (d.time?.length || 0));
+
   return { eventDays, trendDays, totalEvents, totalTrends };
 }
 
@@ -467,155 +360,241 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+
     if (tab.dataset.tab === 'history') renderHistory();
     if (tab.dataset.tab === 'trends') updateCharts();
   });
 });
 
 // ============ DATE NAVIGATION ============
-document.getElementById('historyDate').addEventListener('change', function() { historyViewDate = parseDate(this.value); renderHistory(); });
-document.getElementById('histPrevDay').addEventListener('click', () => { historyViewDate.setDate(historyViewDate.getDate() - 1); document.getElementById('historyDate').value = formatDate(historyViewDate); renderHistory(); });
-document.getElementById('histNextDay').addEventListener('click', () => { historyViewDate.setDate(historyViewDate.getDate() + 1); document.getElementById('historyDate').value = formatDate(historyViewDate); renderHistory(); });
-document.getElementById('histToday').addEventListener('click', () => { historyViewDate = new Date(); document.getElementById('historyDate').value = formatDate(historyViewDate); renderHistory(); });
-document.getElementById('trendDate').addEventListener('change', function() { trendViewDate = parseDate(this.value); updateCharts(); });
-document.getElementById('trendPrevDay').addEventListener('click', () => { trendViewDate.setDate(trendViewDate.getDate() - 1); document.getElementById('trendDate').value = formatDate(trendViewDate); updateCharts(); });
-document.getElementById('trendNextDay').addEventListener('click', () => { trendViewDate.setDate(trendViewDate.getDate() + 1); document.getElementById('trendDate').value = formatDate(trendViewDate); updateCharts(); });
-document.getElementById('trendToday').addEventListener('click', () => { trendViewDate = new Date(); document.getElementById('trendDate').value = formatDate(trendViewDate); updateCharts(); });
+document.getElementById('historyDate').addEventListener('change', function() {
+  historyViewDate = parseDate(this.value);
+  renderHistory();
+});
+
+document.getElementById('histPrevDay').addEventListener('click', () => {
+  historyViewDate.setDate(historyViewDate.getDate() - 1);
+  document.getElementById('historyDate').value = formatDate(historyViewDate);
+  renderHistory();
+});
+
+document.getElementById('histNextDay').addEventListener('click', () => {
+  historyViewDate.setDate(historyViewDate.getDate() + 1);
+  document.getElementById('historyDate').value = formatDate(historyViewDate);
+  renderHistory();
+});
+
+document.getElementById('histToday').addEventListener('click', () => {
+  historyViewDate = new Date();
+  document.getElementById('historyDate').value = formatDate(historyViewDate);
+  renderHistory();
+});
+
+document.getElementById('trendDate').addEventListener('change', function() {
+  trendViewDate = parseDate(this.value);
+  updateCharts();
+});
+
+document.getElementById('trendPrevDay').addEventListener('click', () => {
+  trendViewDate.setDate(trendViewDate.getDate() - 1);
+  document.getElementById('trendDate').value = formatDate(trendViewDate);
+  updateCharts();
+});
+
+document.getElementById('trendNextDay').addEventListener('click', () => {
+  trendViewDate.setDate(trendViewDate.getDate() + 1);
+  document.getElementById('trendDate').value = formatDate(trendViewDate);
+  updateCharts();
+});
+
+document.getElementById('trendToday').addEventListener('click', () => {
+  trendViewDate = new Date();
+  document.getElementById('trendDate').value = formatDate(trendViewDate);
+  updateCharts();
+});
+
 document.getElementById('historyDate').value = formatDate(new Date());
 document.getElementById('trendDate').value = formatDate(new Date());
 
 // ============ CHARTS ============
-function getChartThemeColors() {
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  return { grid: isLight ? 'rgba(15,23,42,0.08)' : 'rgba(255,255,255,0.05)', tick: isLight ? '#5b6472' : '#9aa3b2' };
-}
-function buildChartOptions() {
-  const c = getChartThemeColors();
-  return {
-    responsive: true, maintainAspectRatio: false,
-    scales: {
-      x: { type: 'category', display: true, grid: { color: c.grid }, ticks: { color: c.tick, maxTicksLimit: 8, maxRotation: 0 } },
-      y: { display: true, grid: { color: c.grid }, ticks: { color: c.tick } }
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      type: 'category',
+      display: true,
+      grid: { color: 'rgba(255,255,255,0.03)' },
+      ticks: { color: '#9aa3b2', maxTicksLimit: 8, maxRotation: 0 }
     },
-    plugins: { legend: { display: false } },
-    elements: { point: { radius: 1 }, line: { tension: 0.3, borderWidth: 2 } },
-    interaction: { intersect: false, mode: 'index' }
-  };
-}
+    y: {
+      display: true,
+      grid: { color: 'rgba(255,255,255,0.03)' },
+      ticks: { color: '#9aa3b2' }
+    }
+  },
+  plugins: { legend: { display: false } },
+  elements: { point: { radius: 1 }, line: { tension: 0.3, borderWidth: 2 } },
+  interaction: { intersect: false, mode: 'index' }
+};
+
 const distChart = new Chart(document.getElementById('distChart'), {
   type: 'line',
   data: { labels: [], datasets: [{ data: [], borderColor: '#00f1ff', backgroundColor: 'rgba(0,241,255,0.1)', fill: true }] },
-  options: buildChartOptions()
+  options: chartOptions
 });
-function applyChartTheme() {
-  const c = getChartThemeColors();
-  distChart.options.scales.x.grid.color = c.grid;
-  distChart.options.scales.x.ticks.color = c.tick;
-  distChart.options.scales.y.grid.color = c.grid;
-  distChart.options.scales.y.ticks.color = c.tick;
-  distChart.update('none');
-}
+
 function updateCharts() {
   const dateKey = formatDate(trendViewDate);
   const dayData = trendData[dateKey] || { dist: [], time: [] };
+
   distChart.data.labels = dayData.time || [];
   distChart.data.datasets[0].data = dayData.dist || [];
   distChart.update('none');
+
   const stats = getStorageStats();
-  document.getElementById('trendStorageInfo').innerText = `Storage: ${stats.totalTrends} data points across ${stats.trendDays} days (max ${MAX_DAYS} days)`;
+  document.getElementById('trendStorageInfo').innerText =
+    `Storage: ${stats.totalTrends} data points across ${stats.trendDays} days (max ${MAX_DAYS} days)`;
 }
+
 function addTrendPoint(distance) {
   const now = Date.now();
   if (now - lastTrendSave < TREND_INTERVAL) return;
   lastTrendSave = now;
+
   const dateKey = getDateKey();
   const timeLabel = formatTime(new Date());
-  if (!trendData[dateKey]) trendData[dateKey] = { dist: [], time: [] };
+
+  if (!trendData[dateKey]) {
+    trendData[dateKey] = { dist: [], time: [] };
+  }
+
   const dayData = trendData[dateKey];
   dayData.time.push(timeLabel);
   dayData.dist.push(distance);
-  if (dayData.time.length > 3600) { dayData.time.shift(); dayData.dist.shift(); }
+
+  if (dayData.time.length > 3600) {
+    dayData.time.shift();
+    dayData.dist.shift();
+  }
+
   saveData();
-  if (formatDate(trendViewDate) === dateKey) updateCharts();
+
+  if (formatDate(trendViewDate) === dateKey) {
+    updateCharts();
+  }
 }
 
 // ============ HISTORY ============
 function getHistoryIcon(type, action) {
-  if (type === 'zone') return action === 'DANGER' ? '🔴' : action === 'WARNING' ? '🟡' : '🟢';
   if (type === 'sirine') return action === 'ON' ? '🚨' : '🔕';
-  if (type === 'bypass') return action === 'ON' ? '⏸️' : '▶️';
   if (type === 'mode') return action === 'AUTO' ? '🤖' : '🖐️';
   return '📝';
 }
+
 function getHistoryText(type, action, trigger) {
-  if (type === 'zone') {
-    const label = action === 'DANGER' ? 'Zona → BAHAYA' : action === 'WARNING' ? 'Zona → WARNING' : 'Zona → AMAN';
-    return label;
+  if (type === 'sirine') {
+    const triggerText = trigger === 'auto' ? '(Auto)' : trigger === 'manual' ? '(Manual)' : '';
+    return action === 'ON' ? `Sirine ON ${triggerText}` : `Sirine OFF ${triggerText}`;
   }
-  if (type === 'sirine') return action === 'ON' ? 'Sirine ON' : 'Sirine OFF';
-  if (type === 'bypass') return action === 'ON' ? 'Bypass Diaktifkan (tombol 3 detik)' : 'Bypass Direset';
-  if (type === 'mode') return action === 'AUTO' ? 'Mode → AUTO' : 'Mode → MANUAL';
+  if (type === 'mode') {
+    return action === 'AUTO' ? 'Mode → AUTO' : 'Mode → MANUAL';
+  }
   return action;
 }
-function getHistoryClass(type, action) {
-  if (type === 'zone') return action === 'DANGER' ? 'danger' : action === 'WARNING' ? 'warning' : 'safe';
-  if (type === 'sirine') return action === 'ON' ? 'danger' : 'safe';
-  return 'auto';
-}
+
 function renderHistory() {
   const container = document.getElementById('historyContainer');
   const filter = document.getElementById('historyFilter').value;
   const dateKey = formatDate(historyViewDate);
+
   let dayEvents = eventHistory[dateKey] || [];
+
   let filtered = dayEvents;
-  if (filter !== 'all') filtered = dayEvents.filter(h => h.type === filter);
+  if (filter === 'sirine') filtered = dayEvents.filter(h => h.type === 'sirine');
+  else if (filter === 'mode') filtered = dayEvents.filter(h => h.type === 'mode');
+  else if (filter === 'auto') filtered = dayEvents.filter(h => h.trigger === 'auto');
+  else if (filter === 'manual') filtered = dayEvents.filter(h => h.trigger === 'manual');
+
   document.getElementById('historyCount').innerText = `${filtered.length} events on ${dateKey}`;
+
   if (filtered.length === 0) {
     container.innerHTML = '<div class="no-data">No events on this date</div>';
     updateHistoryStorageInfo();
     return;
   }
+
   container.innerHTML = filtered.slice().reverse().map(h => {
     const icon = getHistoryIcon(h.type, h.action);
     const text = getHistoryText(h.type, h.action, h.trigger);
-    const eventClass = getHistoryClass(h.type, h.action);
+    const eventClass = h.action.toLowerCase();
     const badgeClass = h.trigger || 'auto';
-    const badgeText = h.trigger === 'manual-button' ? 'TOMBOL' : h.trigger === 'manual' ? 'MANUAL' : h.trigger === 'system' ? 'SYSTEM' : h.trigger === 'auto-reset' ? 'AUTO' : 'AUTO';
+    const badgeText = h.trigger === 'manual' ? 'MANUAL' : h.trigger === 'system' ? 'SYSTEM' : 'AUTO';
+
     return `
       <div class="history-item">
         <div class="history-icon">${icon}</div>
         <div class="history-main">
           <div class="history-event ${eventClass}">${text}</div>
           <div class="history-details">
-            <span class="history-badge auto">${badgeText}</span>
-            &nbsp;• Jarak: ${h.distance} cm
+            <span class="history-badge ${badgeClass}">${badgeText}</span>
+            ${h.type === 'sirine' ? ` • Jarak: ${h.distance} cm` : ''}
           </div>
         </div>
-        <div class="history-right"><div class="history-time">${h.time}</div></div>
-      </div>`;
+        <div class="history-right">
+          <div class="history-time">${h.time}</div>
+        </div>
+      </div>
+    `;
   }).join('');
+
   updateHistoryStorageInfo();
 }
+
 function updateHistoryStorageInfo() {
   const stats = getStorageStats();
-  document.getElementById('historyStorageInfo').innerText = `Storage: ${stats.totalEvents} events across ${stats.eventDays} days (max ${MAX_DAYS} days)`;
+  document.getElementById('historyStorageInfo').innerText =
+    `Storage: ${stats.totalEvents} events across ${stats.eventDays} days (max ${MAX_DAYS} days)`;
 }
+
 function addEvent(type, action, trigger, distance) {
   const now = new Date();
   const dateKey = getDateKey(now);
   const time = formatTime(now);
-  if (!eventHistory[dateKey]) eventHistory[dateKey] = [];
+
+  if (!eventHistory[dateKey]) {
+    eventHistory[dateKey] = [];
+  }
+
   eventHistory[dateKey].push({ type, action, trigger, distance, time });
-  if (eventHistory[dateKey].length > 500) eventHistory[dateKey].shift();
+
+  if (eventHistory[dateKey].length > 500) {
+    eventHistory[dateKey].shift();
+  }
+
   saveData();
-  if (formatDate(historyViewDate) === dateKey) renderHistory();
+
+  if (formatDate(historyViewDate) === dateKey) {
+    renderHistory();
+  }
 }
+
 document.getElementById('historyFilter').addEventListener('change', renderHistory);
+
 document.getElementById('clearHistory').addEventListener('click', () => {
-  if (confirm('Clear ALL history data (all dates)?')) { eventHistory = {}; localStorage.removeItem('eventHistory_v' + DATA_VERSION); renderHistory(); }
+  if (confirm('Clear ALL history data (all dates)?')) {
+    eventHistory = {};
+    localStorage.removeItem('eventHistory_v' + DATA_VERSION);
+    renderHistory();
+  }
 });
+
 document.getElementById('clearTrends').addEventListener('click', () => {
-  if (confirm('Clear ALL trend data (all dates)?')) { trendData = {}; localStorage.removeItem('trendData_v' + DATA_VERSION); updateCharts(); }
+  if (confirm('Clear ALL trend data (all dates)?')) {
+    trendData = {};
+    localStorage.removeItem('trendData_v' + DATA_VERSION);
+    updateCharts();
+  }
 });
 
 // ============ MQTT ============
@@ -627,7 +606,7 @@ const mqttUser = "Water_Sistem_Sensor";
 const mqttPass = "45499999";
 const clientId = "web_wateralarm_" + Math.random().toString(16).substr(2, 8);
 
-const client = mqtt.connect(`wss://${mqttHost}:8883/mqtt`, {
+const client = mqtt.connect(`wss://${mqttHost}:8884/mqtt`, {
   clientId, username: mqttUser, password: mqttPass, reconnectPeriod: 3000
 });
 
@@ -635,16 +614,22 @@ function updateConnectionStatus(connected) {
   document.getElementById('statusDot').classList.toggle('online', connected);
   document.getElementById('statusText').innerText = connected ? 'Connected to MQTT' : 'Disconnected - Reconnecting...';
 }
+
 function updateManualControls() {
-  document.getElementById('manualControls').classList.toggle('show', currentMode === "MANUAL" && isLoggedIn);
+  document.getElementById('manualControls').classList.toggle('show', currentMode === "MANUAL");
 }
 
 client.on("connect", () => {
   updateConnectionStatus(true);
+
   client.subscribe("water_alarm/data");
   client.subscribe("water_alarm/event");
-  setTimeout(() => client.publish("water_alarm/get_data", "1"), 500);
+
+  setTimeout(() => {
+    client.publish("water_alarm/get_data", "1");
+  }, 500);
 });
+
 client.on("disconnect", () => updateConnectionStatus(false));
 client.on("error", () => updateConnectionStatus(false));
 
@@ -655,30 +640,18 @@ client.on("message", (topic, message) => {
     try {
       const d = JSON.parse(msg);
       const dist = d.distance;
-      const zone = d.zone || 'SAFE';
+      const isAlarm = d.relay === 1;
 
       const distEl = document.getElementById('distanceVal');
       distEl.innerText = dist.toFixed(1) + ' cm';
-      distEl.classList.remove('warning', 'danger');
-      const badge = document.getElementById('zoneBadge');
-      badge.classList.remove('warning', 'danger');
+      distEl.classList.toggle('alarm', isAlarm);
 
-      if (zone === 'DANGER') {
-        distEl.classList.add('danger'); badge.classList.add('danger'); badge.innerText = '🔴 BAHAYA';
-      } else if (zone === 'WARNING') {
-        distEl.classList.add('warning'); badge.classList.add('warning'); badge.innerText = '🟡 WARNING';
-      } else {
-        badge.innerText = '🟢 AMAN';
-      }
+      document.getElementById('limitVal').innerText = d.batasBawah + ' cm';
+      const margin = (dist - d.batasBawah).toFixed(1);
+      document.getElementById('marginVal').innerText = (margin > 0 ? '+' : '') + margin + ' cm';
+      document.getElementById('safetyStatus').innerText = isAlarm ? 'BAHAYA' : 'AMAN';
+      document.getElementById('safetyStatus').style.color = isAlarm ? 'var(--danger)' : 'var(--success)';
 
-      document.getElementById('thresholdInfo').innerText = `Aman ≥ ${d.jarakAman} cm  |  Bahaya ≤ ${d.jarakBahaya} cm`;
-      document.getElementById('bypassNote').classList.toggle('show', d.bypass === 1);
-
-      document.getElementById('ledGreen').className = 'led-dot' + (d.ledGreen ? ' green-on' : '');
-      document.getElementById('ledWhite').className = 'led-dot' + (d.ledWhite ? ' white-on' : '');
-      document.getElementById('ledRed').className = 'led-dot' + (d.ledRed ? ' red-on' : '');
-
-      const isAlarm = d.relay === 1;
       const pumpEl = document.getElementById('pumpState');
       pumpEl.innerText = isAlarm ? 'ON' : 'OFF';
       pumpEl.classList.toggle('on', isAlarm);
@@ -687,8 +660,11 @@ client.on("message", (topic, message) => {
       document.getElementById('modeSelect').value = d.mode;
       updateManualControls();
 
-      if (!userEditingAman) document.getElementById('setAman').value = d.jarakAman;
-      if (!userEditingBahaya) document.getElementById('setBahaya').value = d.jarakBahaya;
+      if (!userEditingSetpoint) document.getElementById('setpoint').value = d.batasBawah;
+      if (!userEditingHysteresis) document.getElementById('hysteresis').value = d.hysteresis || 5;
+
+      const high = d.offThreshold || (d.batasBawah + (d.hysteresis || 5));
+      document.getElementById('thresholdInfo').innerText = `Sirine ON < ${d.batasBawah} cm | OFF ≥ ${high} cm`;
 
       addTrendPoint(dist);
     } catch (e) { console.error("Data parse error:", e); }
@@ -703,44 +679,40 @@ client.on("message", (topic, message) => {
 });
 
 // ============ INPUT HANDLERS ============
-const amanInput = document.getElementById('setAman');
-const bahayaInput = document.getElementById('setBahaya');
-amanInput.addEventListener('focus', () => userEditingAman = true);
-amanInput.addEventListener('blur', () => setTimeout(() => userEditingAman = false, 500));
-amanInput.addEventListener('input', () => userEditingAman = true);
-bahayaInput.addEventListener('focus', () => userEditingBahaya = true);
-bahayaInput.addEventListener('blur', () => setTimeout(() => userEditingBahaya = false, 500));
-bahayaInput.addEventListener('input', () => userEditingBahaya = true);
+const setpointInput = document.getElementById('setpoint');
+const hysteresisInput = document.getElementById('hysteresis');
+
+setpointInput.addEventListener('focus', () => userEditingSetpoint = true);
+setpointInput.addEventListener('blur', () => setTimeout(() => userEditingSetpoint = false, 500));
+setpointInput.addEventListener('input', () => userEditingSetpoint = true);
+
+hysteresisInput.addEventListener('focus', () => userEditingHysteresis = true);
+hysteresisInput.addEventListener('blur', () => setTimeout(() => userEditingHysteresis = false, 500));
+hysteresisInput.addEventListener('input', () => userEditingHysteresis = true);
 
 document.getElementById('setBtn').addEventListener('click', () => {
-  if (!isLoggedIn) return;
-  let aman = parseInt(amanInput.value) || 100;
-  let bahaya = parseInt(bahayaInput.value) || 30;
-  aman = Math.max(1, Math.min(500, aman));
-  bahaya = Math.max(1, Math.min(500, bahaya));
-  const errEl = document.getElementById('setError');
-  if (bahaya >= aman) {
-    errEl.textContent = 'Jarak Bahaya harus lebih kecil dari Jarak Aman.';
-    return;
-  }
-  errEl.textContent = '';
-  userEditingAman = false;
-  userEditingBahaya = false;
-  client.publish("water_alarm/setlimit", JSON.stringify({ jarakAman: aman, jarakBahaya: bahaya }));
+  let lim = parseInt(setpointInput.value) || 30;
+  let hy = parseInt(hysteresisInput.value) || 5;
+  lim = Math.max(1, Math.min(500, lim));
+  hy = Math.max(1, Math.min(50, hy));
+  userEditingSetpoint = false;
+  userEditingHysteresis = false;
+  client.publish("water_alarm/setlimit", JSON.stringify({ batasBawah: lim }));
+  client.publish("water_alarm/hysteresis", JSON.stringify({ hysteresis: hy }));
 });
 
-modeSelectEl.addEventListener('change', function() {
-  if (!isLoggedIn) return;
+document.getElementById('modeSelect').addEventListener('change', function() {
   currentMode = this.value;
   updateManualControls();
   client.publish("water_alarm/setmode", JSON.stringify({ mode: this.value }));
 });
 
 document.getElementById('pumpOn').addEventListener('click', () => {
-  if (currentMode === "MANUAL" && isLoggedIn) client.publish("water_alarm/manualsiren", JSON.stringify({ state: 1 }));
+  if (currentMode === "MANUAL") client.publish("water_alarm/manualsiren", JSON.stringify({ state: 1 }));
 });
+
 document.getElementById('pumpOff').addEventListener('click', () => {
-  if (currentMode === "MANUAL" && isLoggedIn) client.publish("water_alarm/manualsiren", JSON.stringify({ state: 0 }));
+  if (currentMode === "MANUAL") client.publish("water_alarm/manualsiren", JSON.stringify({ state: 0 }));
 });
 
 // ============ INIT ============
