@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Flood Alarm System</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
@@ -161,6 +161,7 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
     <div class="subtitle">Jarak Sensor ke Permukaan Air (cm)</div>
     <div class="zone-badge" id="zoneBadge">--</div>
     <div class="threshold-info" id="thresholdInfo">Aman ≥ -- cm &nbsp;|&nbsp; Bahaya ≤ -- cm</div>
+    <div class="threshold-info" id="calibInfo" style="margin-top:6px">Kalibrasi: -- cm</div>
     <div class="bypass-note" id="bypassNote">🔕 Alarm sedang di-bypass manual (tombol fisik) — LED merah tetap berkedip sebagai peringatan</div>
   </div>
 
@@ -180,7 +181,7 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
       <div class="device-row">
         <div>
           <div class="device-name">🚨 Sirine Alarm</div>
-          <div class="device-desc"</div>
+          <div class="device-desc"></div>
         </div>
         <div style="text-align:right">
           <div class="pump-state" id="pumpState">OFF</div>
@@ -214,6 +215,21 @@ header .right{display:flex;align-items:center;gap:14px;text-align:right;color:va
         </div>
       </div>
       <div id="setError" style="color:var(--danger);font-size:11px;margin-top:6px"></div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border2)">
+        <div class="control-label" style="margin-bottom:8px">🎯 Kalibrasi Jarak Sensor</div>
+        <div class="controls">
+          <div class="control-group">
+            <div class="control-label">Koreksi (cm)</div>
+            <input id="setCalibration" type="number" step="0.1" min="-500" max="500" value="0" class="control-input"/>
+          </div>
+          <button class="btn" id="calibBtn">SIMPAN</button>
+        </div>
+        <div class="info-text" style="text-align:left;margin-top:8px">
+          <div>Jika sensor membaca <b>lebih jauh</b> dari jarak aslinya (misal sensor 25 cm, aslinya 23 cm) → isi <b>-2</b></div>
+          <div>Jika sensor membaca <b>lebih dekat</b> dari jarak aslinya (misal sensor 25 cm, aslinya 27 cm) → isi <b>+2</b></div>
+        </div>
+      </div>
     </div>
 
     <div class="info-text">
@@ -387,6 +403,7 @@ const DATA_VERSION = 2;
 
 let userEditingAman = false;
 let userEditingBahaya = false;
+let userEditingCalib = false;
 let currentMode = "AUTO";
 let lastTrendSave = 0;
 let eventHistory = {};
@@ -456,7 +473,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     tab.classList.add('active');
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
     if (tab.dataset.tab === 'history') renderHistory();
-    if (tab.dataset.tab === 'trends') updateCharts();
+    if (tab.dataset.tab === 'trends') { updateCharts(); distChart.resize(); }
   });
 });
 
@@ -657,6 +674,10 @@ client.on("message", (topic, message) => {
       document.getElementById('thresholdInfo').innerText = `Aman ≥ ${d.jarakAman} cm  |  Bahaya ≤ ${d.jarakBahaya} cm`;
       document.getElementById('bypassNote').classList.toggle('show', d.bypass === 1);
 
+      const calib = typeof d.calibration === 'number' ? d.calibration : 0;
+      document.getElementById('calibInfo').innerText = `Kalibrasi: ${calib > 0 ? '+' : ''}${calib.toFixed(1)} cm`;
+      if (!userEditingCalib) document.getElementById('setCalibration').value = calib;
+
       const isAlarm = d.relay === 1;
       const pumpEl = document.getElementById('pumpState');
       pumpEl.innerText = isAlarm ? 'ON' : 'OFF';
@@ -690,6 +711,20 @@ amanInput.addEventListener('input', () => userEditingAman = true);
 bahayaInput.addEventListener('focus', () => userEditingBahaya = true);
 bahayaInput.addEventListener('blur', () => setTimeout(() => userEditingBahaya = false, 500));
 bahayaInput.addEventListener('input', () => userEditingBahaya = true);
+
+const calibInput = document.getElementById('setCalibration');
+calibInput.addEventListener('focus', () => userEditingCalib = true);
+calibInput.addEventListener('blur', () => setTimeout(() => userEditingCalib = false, 500));
+calibInput.addEventListener('input', () => userEditingCalib = true);
+
+document.getElementById('calibBtn').addEventListener('click', () => {
+  if (!isLoggedIn) return;
+  let offset = parseFloat(calibInput.value);
+  if (isNaN(offset)) offset = 0;
+  offset = Math.max(-500, Math.min(500, offset));
+  userEditingCalib = false;
+  client.publish("water_alarm/setcalibration", JSON.stringify({ offset }));
+});
 
 document.getElementById('setBtn').addEventListener('click', () => {
   if (!isLoggedIn) return;
